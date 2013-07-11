@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}
+
+\title{Gaussian Pollution Model}
+\author{Chip Bell}
+
+\begin{document}
+\maketitle
+Many soot dispersion models use a Gaussian spread model. This model is very
+similar, utilizing a Gaussian approach (modelling densities rather than
+tracking individual particles). However, my approach is that wind disperses
+soot particles in \emph{all} directions, but mostly in the direction of the
+wind. Also, wind disperses soot a distance proportional to the wind speed.
+
+Approaching this from a different perspective gives us the idea that the
+pollution at given point is dependent on the speed of the wind at that given
+area, along with the direction of the wind. So, some small area $dA$ receives
+some fractional pollution from all of the area around it, depending on the
+wind velocity and heading.
+
+I believe that this dispersion is both Gaussian in distance (relating to wind
+velocity) and in angle (relating to wind direction), giving us a two
+dimensional Gaussian curve. The standard normal curve is as follows (CITE):
+\[
+	N(\mu, \sigma, x) = \frac{1}{\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2} }
+\]
+
+We can extend this into a second dimension by simply multiplying the curve by
+another normal curve (CITE). In our case, we want the curve to model wind
+dispersion in a polar coordinate system $(r,\theta)$. We can choose two means
+and two standard deviations, but those are simply parameters that can be
+reasonably chosen through some experimentation and guessing.
+
+Since, these are Gaussian distributions, we are guaranteed that the area
+underneath the graphs (in our case, the volume) is 1. The pollution at some
+specified location is the weighted sum of all pollution, where the weights are
+determined by wind speed and direction. If we let $(a,b)$ be the point we seek
+to evaluate, $d_{(x,y)}$ be the distance from the point $(x,y)$ to our point
+$(a,b)$ and $\phi_{(x,y)}$ be the angle between our point $(a,b)$ and $(x,y)$,
+we arrive at a method for determining the pollution density $P$ at some
+location $(x,y)$ and time $t$.
+\[
+P(a, b, t+h) = \int_{R^2} N_r(\frac{v(t)}{h}, \sigma_r, d_{x,y})
+	N_\theta(h(t), \sigma_\theta, \phi_{x,y}) P(x,y,t) dA 
+\]
+In this case, $v(t)$ is the velocity of the wind at the current time $t$, and
+$h(t)$ is the heading of the wind at the current time. Since we are
+integrating over all space, we are simply convoluting the ``pollution image''
+in polar space.
+
+However, an issue arises with using this method. Consider we are simulating
+over some pixel space, say a standard XGA screen (resolution 1280 
+$\times$ 768). For each of those pixels, every pixel on the screen must be
+added into a weighted sum to calculate the pollution density for \emph{each
+pixel}. This results in an $O(n^4)$ algorithm. Most modern computer screens 
+operate at an even higher resolution, making speed an issue.
+
+\end{document}
